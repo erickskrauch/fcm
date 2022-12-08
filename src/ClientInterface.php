@@ -3,8 +3,9 @@ declare(strict_types=1);
 
 namespace ErickSkrauch\Fcm;
 
+use ErickSkrauch\Fcm\Message\Message;
 use ErickSkrauch\Fcm\Recipient\Recipient;
-use Psr\Http\Message\ResponseInterface;
+use ErickSkrauch\Fcm\Response\SendResponse;
 
 interface ClientInterface {
 
@@ -14,9 +15,10 @@ interface ClientInterface {
      * @param Message $message
      * @param Recipient $recipient
      *
-     * @return ResponseInterface
+     * @return SendResponse
      * @throws \Psr\Http\Client\ClientExceptionInterface
+     * @throws \ErickSkrauch\Fcm\Exception\UnexpectedResponseException
      */
-    public function send(Message $message, Recipient $recipient): ResponseInterface;
+    public function send(Message $message, Recipient $recipient): SendResponse;
 
 }

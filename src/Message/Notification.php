@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace ErickSkrauch\Fcm;
+namespace ErickSkrauch\Fcm\Message;
 
 use InvalidArgumentException;
 use JsonSerializable;

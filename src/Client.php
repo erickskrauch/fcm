@@ -3,12 +3,14 @@ declare(strict_types=1);
 
 namespace ErickSkrauch\Fcm;
 
+use ErickSkrauch\Fcm\Exception\UnexpectedResponseException;
+use ErickSkrauch\Fcm\Message\Message;
 use ErickSkrauch\Fcm\Recipient\Recipient;
+use ErickSkrauch\Fcm\Response\SendResponse;
 use Http\Discovery\Psr17FactoryDiscovery;
 use Http\Discovery\Psr18ClientDiscovery;
 use Psr\Http\Client\ClientInterface as HttpClientInterface;
 use Psr\Http\Message\RequestFactoryInterface as HttpRequestFactoryInterface;
-use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamFactoryInterface;
 
 final class Client implements ClientInterface {
@@ -39,7 +41,7 @@ final class Client implements ClientInterface {
         $this->streamFactory = $streamFactory ?? Psr17FactoryDiscovery::findStreamFactory();
     }
 
-    public function send(Message $message, Recipient $recipient): ResponseInterface {
+    public function send(Message $message, Recipient $recipient): SendResponse {
         $json = $message->getPayload();
         $json[$recipient->getConditionParam()] = $recipient->getConditionValue();
 
@@ -48,7 +50,19 @@ final class Client implements ClientInterface {
         $request = $request->withHeader('Content-Type', 'application/json');
         $request = $request->withBody($this->streamFactory->createStream(json_encode($json, JSON_THROW_ON_ERROR)));
 
-        return $this->httpClient->sendRequest($request);
+        $response = $this->httpClient->sendRequest($request);
+        if ($response->getStatusCode() !== 200) {
+            throw new UnexpectedResponseException($response);
+        }
+
+        $json = json_decode((string)$response->getBody(), true, JSON_THROW_ON_ERROR);
+
+        return new SendResponse(
+            $json['multicast_id'],
+            $json['success'],
+            $json['failure'],
+            $json['results'],
+        );
     }
 
 }

@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace ErickSkrauch\Fcm;
+namespace ErickSkrauch\Fcm\Message;
 
 final class Message {
 
@@ -10,7 +10,7 @@ final class Message {
 
     /**
      * @var array{
-     *     notification: \ErickSkrauch\Fcm\Notification,
+     *     notification: \ErickSkrauch\Fcm\Message\Notification,
      *     restricted_package_name?: string,
      *     collapse_key?: string,
      *     priority?: string,
@@ -97,7 +97,7 @@ final class Message {
 
     /**
      * @return array{
-     *     notification: \ErickSkrauch\Fcm\Notification,
+     *     notification: \ErickSkrauch\Fcm\Message\Notification,
      *     restricted_package_name?: string,
      *     collapse_key?: string,
      *     priority?: string,

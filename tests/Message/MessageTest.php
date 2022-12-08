@@ -1,14 +1,14 @@
 <?php
 declare(strict_types=1);
 
-namespace ErickSkrauch\Fcm\Tests;
+namespace ErickSkrauch\Fcm\Tests\Message;
 
-use ErickSkrauch\Fcm\Message;
-use ErickSkrauch\Fcm\Notification;
+use ErickSkrauch\Fcm\Message\Message;
+use ErickSkrauch\Fcm\Message\Notification;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers \ErickSkrauch\Fcm\Message
+ * @covers \ErickSkrauch\Fcm\Message\Message
  */
 final class MessageTest extends TestCase {
 

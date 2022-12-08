@@ -1,14 +1,14 @@
 <?php
 declare(strict_types=1);
 
-namespace ErickSkrauch\Fcm\Tests;
+namespace ErickSkrauch\Fcm\Tests\Message;
 
-use ErickSkrauch\Fcm\Notification;
+use ErickSkrauch\Fcm\Message\Notification;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers \ErickSkrauch\Fcm\Notification
+ * @covers \ErickSkrauch\Fcm\Message\Notification
  */
 final class NotificationTest extends TestCase {
 
