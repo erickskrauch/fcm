@@ -6,7 +6,6 @@ namespace ErickSkrauch\Fcm\Tests;
 use ErickSkrauch\Fcm\Client;
 use ErickSkrauch\Fcm\Exception\UnexpectedResponseException;
 use ErickSkrauch\Fcm\Message\Message;
-use ErickSkrauch\Fcm\Message\Notification;
 use ErickSkrauch\Fcm\Recipient\Recipient;
 use Http\Discovery\HttpClientDiscovery;
 use Http\Discovery\Strategy\MockClientStrategy;
@@ -41,7 +40,7 @@ final class ClientTest extends TestCase {
                 $this->assertSame('key=mock api key', $request->getHeaderLine('Authorization'));
                 $this->assertSame('application/json', $request->getHeaderLine('Content-Type'));
                 $this->assertSame(
-                    '{"notification":{"title":"mock title","body":"mock body"},"collapse_key":"mock collapse key","mock condition param":"mock condition value"}',
+                    '{"collapse_key":"mock collapse key","mock condition param":"mock condition value"}',
                     (string)$request->getBody(),
                 );
 
@@ -60,10 +59,7 @@ final class ClientTest extends TestCase {
             ->method('createStream')
             ->willReturnCallback(fn(...$args) => Stream::create(...$args));
 
-        $notification = new Notification();
-        $notification->setTitle('mock title');
-        $notification->setBody('mock body');
-        $message = new Message($notification);
+        $message = new Message();
         $message->setCollapseKey('mock collapse key');
 
         $recipient = $this->createMock(Recipient::class);
@@ -99,7 +95,7 @@ final class ClientTest extends TestCase {
 
         $client = new Client('mock api key', $httpClient);
         try {
-            $client->send(new Message(new Notification()), $recipient);
+            $client->send(new Message(), $recipient);
             $this->fail(UnexpectedResponseException::class . ' was not thrown');
         } catch (UnexpectedResponseException $e) {
             $this->assertSame('Received an unexpected response from FCM', $e->getMessage());
@@ -119,7 +115,7 @@ final class ClientTest extends TestCase {
 
         $client = new Client('mock api key', $httpClient);
         try {
-            $client->send(new Message(new Notification()), $recipient);
+            $client->send(new Message(), $recipient);
             $this->fail(ClientExceptionInterface::class . ' was not thrown');
         } catch (Throwable $thrownException) {
             $this->assertSame($exception, $thrownException);

@@ -40,7 +40,8 @@ $notification = new Notification(, 'testing body');
 $notification->setTitle('Wow, something happened...');
 $notification->setBody('It just works!');
 
-$message = new Message($notification);
+$message = new Message();
+$message->setNotification($notification);
 $message->setCollapseKey('collapse.key');
 
 $recipient = new Device('your-device-token');

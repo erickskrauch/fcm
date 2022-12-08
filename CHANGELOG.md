@@ -5,8 +5,16 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 
 ## [Unreleased]
 
+## [0.2.0] - 2022-12-08
+### Added
+- `Message::setNotification()` method.
+
+### Changed
+- `Notification` is no longer an argument of the `Message` constructor.
+
 ## 0.1.0 - 2022-12-08
 ### Added
 - First release
 
-[Unreleased]: https://github.com/erickskrauch/fcm/compare/0.1.0...HEAD
+[Unreleased]: https://github.com/erickskrauch/fcm/compare/0.2.0...HEAD
+[0.2.0]: https://github.com/elyby/php-code-style/compare/0.1.0...0.2.0

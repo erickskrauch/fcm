@@ -10,7 +10,7 @@ final class Message {
 
     /**
      * @var array{
-     *     notification: \ErickSkrauch\Fcm\Message\Notification,
+     *     notification?: \ErickSkrauch\Fcm\Message\Notification,
      *     restricted_package_name?: string,
      *     collapse_key?: string,
      *     priority?: string,
@@ -21,12 +21,11 @@ final class Message {
      *     data?: array<string, string|int>,
      * }
      */
-    private array $data;
+    private array $data = [];
 
-    public function __construct(Notification $notification) {
-        $this->data = [
-            'notification' => $notification,
-        ];
+    public function setNotification(Notification $notification): self {
+        $this->data['notification'] = $notification;
+        return $this;
     }
 
     /**
@@ -97,7 +96,7 @@ final class Message {
 
     /**
      * @return array{
-     *     notification: \ErickSkrauch\Fcm\Message\Notification,
+     *     notification?: \ErickSkrauch\Fcm\Message\Notification,
      *     restricted_package_name?: string,
      *     collapse_key?: string,
      *     priority?: string,

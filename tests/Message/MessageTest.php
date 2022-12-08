@@ -18,7 +18,8 @@ final class MessageTest extends TestCase {
 
     public function test(): void {
         $notification = new Notification();
-        $model = new Message($notification);
+        $model = new Message();
+        $model->setNotification($notification);
         $model->setRestrictedPackageName('mock.package');
         $model->setCollapseKey('mock collapse key');
         $model->setPriority(Message::PRIORITY_HIGH);
