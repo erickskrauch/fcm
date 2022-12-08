@@ -19,6 +19,11 @@ final class DevicesGroupTest extends TestCase {
         $this->assertSame(['mock 1', 'mock 2'], $model->getConditionValue());
     }
 
+    public function testShouldAllowUpTo1000Tokens(): void {
+        $this->expectNotToPerformAssertions();
+        new DevicesGroup(array_fill(0, 1000, 'mock token'));
+    }
+
     /**
      * @dataProvider getInvalidCases
      * @param string[] $input

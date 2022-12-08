@@ -9,10 +9,13 @@ use ErickSkrauch\Fcm\Notification;
 use ErickSkrauch\Fcm\Recipient\Recipient;
 use Http\Discovery\HttpClientDiscovery;
 use Http\Discovery\Strategy\MockClientStrategy;
-use Nyholm\Psr7\Factory\Psr17Factory;
+use Nyholm\Psr7\Request;
+use Nyholm\Psr7\Stream;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Client\ClientInterface as HttpClientInterface;
+use Psr\Http\Message\RequestFactoryInterface as HttpRequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\StreamFactoryInterface;
 
 /**
  * @covers \ErickSkrauch\Fcm\Client
@@ -37,7 +40,16 @@ final class ClientTest extends TestCase {
                 return true;
             }));
 
-        $psr17Factory = new Psr17Factory();
+        $requestFactory = $this->createMock(HttpRequestFactoryInterface::class);
+        $requestFactory
+            ->expects($this->atLeastOnce())
+            ->method('createRequest')
+            ->willReturnCallback(fn(...$args) => new Request(...$args));
+        $streamFactory = $this->createMock(StreamFactoryInterface::class);
+        $streamFactory
+            ->expects($this->atLeastOnce())
+            ->method('createStream')
+            ->willReturnCallback(fn(...$args) => Stream::create(...$args));
 
         $notification = new Notification();
         $notification->setTitle('mock title');
@@ -49,7 +61,7 @@ final class ClientTest extends TestCase {
         $recipient->method('getConditionParam')->willReturn('mock condition param');
         $recipient->method('getConditionValue')->willReturn('mock condition value');
 
-        $client = new Client('mock api key', $httpClient, $psr17Factory, $psr17Factory);
+        $client = new Client('mock api key', $httpClient, $requestFactory, $streamFactory);
         $client->send($message, $recipient);
     }
 

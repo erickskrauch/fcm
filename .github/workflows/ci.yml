@@ -25,6 +25,7 @@ jobs:
         with:
           php-version: ${{ matrix.php-versions }}
           extensions: ctype, mbstring
+          coverage: xdebug
           tools: cs2pr
 
       - name: Get Composer's cache directory
@@ -59,3 +60,7 @@ jobs:
 
       - name: PHPUnit
         run: vendor/bin/phpunit
+
+      - name: Infection
+        if: matrix.php-versions == '7.4'
+        run: vendor/bin/infection --min-msi=90 --min-covered-msi=90

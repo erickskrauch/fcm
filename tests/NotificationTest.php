@@ -29,6 +29,7 @@ final class NotificationTest extends TestCase {
         $this->model->setClickAction('MOCK_ACTION');
         $this->model->setTag('mock tag');
         $this->model->setSound('mock_sound.mp3');
+        $this->model->setAndroidChannelId('mock android channel id');
         $this->assertSame(
             [
                 'title' => 'mock title',
@@ -40,6 +41,7 @@ final class NotificationTest extends TestCase {
                 'click_action' => 'MOCK_ACTION',
                 'tag' => 'mock tag',
                 'sound' => 'mock_sound.mp3',
+                'android_channel_id' => 'mock android channel id',
             ],
             $this->model->jsonSerialize(),
         );
