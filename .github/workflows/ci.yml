@@ -43,11 +43,11 @@ jobs:
         run: composer install
 
       - name: Normalize composer.json
-        if: matrix.php-versions == '8.1'
+        if: matrix.php-versions == '7.4'
         run: composer normalize --dry-run
 
       - name: PHP-CS-Fixer
-        if: matrix.php-versions == '8.1'
+        if: matrix.php-versions == '7.4'
         run: vendor/bin/php-cs-fixer fix --dry-run --format=checkstyle | cs2pr
 
       - name: PHPStan
