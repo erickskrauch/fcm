@@ -1,0 +1,13 @@
+# https://github.com/phpstan/phpstan#configuration
+parameters:
+  paths:
+    - src
+    - tests
+  level: 8
+  inferPrivatePropertyTypeFromConstructor: true
+  checkGenericClassInNonGenericObjectType: false
+  ignoreErrors:
+    # Empty is used only for arrays, so this inspection unnecessary.
+    - message: "#Construct empty\\(\\) is not allowed\\. Use more strict comparison\\.#"
+    # https://github.com/phpstan/phpstan-strict-rules/issues/36
+    - message: '#Dynamic call to static method PHPUnit\\Framework\\.*#'
