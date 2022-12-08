@@ -3,25 +3,25 @@ declare(strict_types=1);
 
 namespace ErickSkrauch\Fcm\Tests\Recipient;
 
-use ErickSkrauch\Fcm\Recipient\DevicesGroup;
+use ErickSkrauch\Fcm\Recipient\MultipleDevices;
 use ErickSkrauch\Fcm\Recipient\Recipient;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @covers \ErickSkrauch\Fcm\Recipient\DevicesGroup
+ * @covers \ErickSkrauch\Fcm\Recipient\MultipleDevices
  */
-final class DevicesGroupTest extends TestCase {
+final class MultipleDevicesTest extends TestCase {
 
     public function testCorrectUsage(): void {
-        $model = new DevicesGroup(['mock 1', 'mock 2']);
+        $model = new MultipleDevices(['mock 1', 'mock 2']);
         $this->assertSame(Recipient::PARAM_REGISTRATION_IDS, $model->getConditionParam());
         $this->assertSame(['mock 1', 'mock 2'], $model->getConditionValue());
     }
 
     public function testShouldAllowUpTo1000Tokens(): void {
         $this->expectNotToPerformAssertions();
-        new DevicesGroup(array_fill(0, 1000, 'mock token'));
+        new MultipleDevices(array_fill(0, 1000, 'mock token'));
     }
 
     /**
@@ -32,7 +32,7 @@ final class DevicesGroupTest extends TestCase {
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('The array must contain at least 1 and at most 1000 registration tokens.');
 
-        new DevicesGroup($input);
+        new MultipleDevices($input);
     }
 
     /**

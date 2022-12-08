@@ -20,7 +20,7 @@
     ],
     "homepage": "https://github.com/erickskrauch/php-fcm",
     "require": {
-        "php": "^7.4 || ^8",
+        "php": "^7.4 || ^8.0",
         "ext-json": "*",
         "php-http/discovery": "^1.4",
         "psr/http-client": "^1.0",

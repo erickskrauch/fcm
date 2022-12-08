@@ -5,7 +5,7 @@ namespace ErickSkrauch\Fcm\Recipient;
 
 use InvalidArgumentException;
 
-final class DevicesGroup implements Recipient {
+final class MultipleDevices implements Recipient {
 
     /**
      * @var string[]
