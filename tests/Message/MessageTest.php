@@ -36,7 +36,7 @@ final class MessageTest extends TestCase {
                 'collapse_key' => 'mock collapse key',
                 'priority' => Message::PRIORITY_HIGH,
                 'time_to_live' => 3600,
-                'mutable_content' => 1,
+                'mutable_content' => true,
                 'content_available' => true,
                 'image' => 'https://example.com/image.png',
                 'data' => [

@@ -15,7 +15,7 @@ final class Message {
      *     collapse_key?: string,
      *     priority?: string,
      *     time_to_live?: int,
-     *     mutable_content?: 1,
+     *     mutable_content?: true,
      *     content_available?: true,
      *     image?: string,
      *     data?: array<string, string|int>,
@@ -65,7 +65,7 @@ final class Message {
      * @see https://firebase.google.com/docs/cloud-messaging/http-server-ref#mutable_content
      */
     public function setMutableContent(): self {
-        $this->data['mutable_content'] = 1;
+        $this->data['mutable_content'] = true;
         return $this;
     }
 
@@ -101,7 +101,7 @@ final class Message {
      *     collapse_key?: string,
      *     priority?: string,
      *     time_to_live?: int,
-     *     mutable_content?: 1,
+     *     mutable_content?: true,
      *     content_available?: true,
      *     image?: string,
      *     data?: array<string, string|int>,
