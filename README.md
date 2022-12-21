@@ -3,7 +3,7 @@
 Just another client to send push notifications via Firebase Cloud Messaging (FCM). The implementation is inspired by [Paragraph1/php-fcm](https://github.com/Paragraph1/php-fcm) and its fork [guigpm/php-fcm](https://github.com/guigpm/php-fcm), but heavily reworked in favor of simpler code and better implementation.
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/erickskrauch/fcm.svg?style=flat-square)](https://packagist.org/packages/erickskrauch/fcm)
-[![Build Status](https://img.shields.io/github/workflow/status/erickskrauch/fcm/CI.svg?style=flat-square)](https://github.com/erickskrauch/fcm/actions)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/erickskrauch/fcm/ci.yml?branch=master&style=flat-square)](https://github.com/erickskrauch/fcm/actions)
 [![Changelog](https://img.shields.io/badge/changelog-Keep%20a%20Changelog-%23E05735?style=flat-square)](CHANGELOG.md)
 [![PHP version](https://img.shields.io/packagist/dependency-v/erickskrauch/fcm/php?style=flat-square)](composer.json)
 [![Software License](https://img.shields.io/badge/license-MIT-green.svg?style=flat-square)](LICENSE)
