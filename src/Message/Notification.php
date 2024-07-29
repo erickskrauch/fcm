@@ -106,7 +106,7 @@ final class Notification implements JsonSerializable {
      * @param array<string|int>|null $args
      * @return self
      */
-    public function setTitleLocKey(string $titleLocKey, array $args = null): self {
+    public function setTitleLocKey(string $titleLocKey, ?array $args = null): self {
         if (isset($this->data['title'])) {
             throw new InvalidArgumentException('You cannot use "title" and "title_loc_key" at the same time');
         }
@@ -124,7 +124,7 @@ final class Notification implements JsonSerializable {
      * @param array<string|int>|null $args
      * @return self
      */
-    public function setBodyLocKey(string $bodyLocKey, array $args = null): self {
+    public function setBodyLocKey(string $bodyLocKey, ?array $args = null): self {
         if (isset($this->data['body'])) {
             throw new InvalidArgumentException('You cannot use "body" and "body_loc_key" at the same time');
         }

@@ -12,11 +12,11 @@ final class Topic implements Recipient {
     }
 
     public function getConditionParam(): string {
-        return Recipient::PARAM_TO;
+        return 'topic';
     }
 
     public function getConditionValue(): string {
-        return "/topics/{$this->name}";
+        return $this->name;
     }
 
 }

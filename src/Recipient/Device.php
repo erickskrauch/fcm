@@ -12,7 +12,7 @@ final class Device implements Recipient {
     }
 
     public function getConditionParam(): string {
-        return Recipient::PARAM_TO;
+        return 'token';
     }
 
     public function getConditionValue(): string {

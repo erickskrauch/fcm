@@ -5,20 +5,20 @@ namespace ErickSkrauch\Fcm;
 
 use ErickSkrauch\Fcm\Message\Message;
 use ErickSkrauch\Fcm\Recipient\Recipient;
-use ErickSkrauch\Fcm\Response\SendResponse;
 
 interface ClientInterface {
 
     /**
      * Sends your notification to the FCM and returns a raw response
      *
-     * @param Message $message
-     * @param Recipient $recipient
+     * @see https://firebase.google.com/docs/reference/fcm/rest/v1/projects.messages/send
      *
-     * @return SendResponse
+     * @return string the send ID from FCM
      * @throws \Psr\Http\Client\ClientExceptionInterface
      * @throws \ErickSkrauch\Fcm\Exception\UnexpectedResponseException
+     * @throws \ErickSkrauch\Fcm\Exception\ErrorResponseException
+     * @throws \JsonException
      */
-    public function send(Message $message, Recipient $recipient): SendResponse;
+    public function send(Message $message, Recipient $recipient): string;
 
 }

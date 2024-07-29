@@ -4,60 +4,39 @@ declare(strict_types=1);
 namespace ErickSkrauch\Fcm\Tests;
 
 use ErickSkrauch\Fcm\Client;
+use ErickSkrauch\Fcm\Exception\ErrorResponseException;
 use ErickSkrauch\Fcm\Exception\UnexpectedResponseException;
 use ErickSkrauch\Fcm\Message\Message;
+use ErickSkrauch\Fcm\Recipient\Device;
 use ErickSkrauch\Fcm\Recipient\Recipient;
-use Http\Discovery\HttpClientDiscovery;
-use Http\Discovery\Strategy\MockClientStrategy;
-use Nyholm\Psr7\Request;
+use Http\Mock\Client as MockHttpClient;
 use Nyholm\Psr7\Stream;
 use PHPUnit\Framework\TestCase;
-use Psr\Http\Client\ClientExceptionInterface;
-use Psr\Http\Client\ClientInterface as HttpClientInterface;
-use Psr\Http\Message\RequestFactoryInterface as HttpRequestFactoryInterface;
-use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\StreamFactoryInterface;
-use Throwable;
 
 /**
  * @covers \ErickSkrauch\Fcm\Client
+ * @covers \ErickSkrauch\Fcm\Exception\ErrorResponseException
+ * @covers \ErickSkrauch\Fcm\Exception\UnexpectedResponseException
  */
 final class ClientTest extends TestCase {
+
+    private MockHttpClient $httpClient;
+
+    private Client $client;
+
+    protected function setUp(): void {
+        parent::setUp();
+        $this->httpClient = new MockHttpClient();
+        $this->client = new Client('mock api token', 'mock-project', $this->httpClient);
+    }
 
     public function testSuccessfullySend(): void {
         $response = $this->createMock(ResponseInterface::class);
         $response->method('getStatusCode')->willReturn(200);
-        $response->method('getBody')->willReturn(Stream::create('{"multicast_id":1234567890123456789,"success":2,"failure":1,"canonical_ids":0,"results":[{"message_id":"mock_message_1"},{"message_id":"mock_message_2"},{"error":"InvalidRegistration"}]}'));
+        $response->method('getBody')->willReturn(Stream::create('{"name":"projects/mock-project/messages/0:1722275862463685%d2fce111d2fce111"}'));
 
-        $httpClient = $this->createMock(HttpClientInterface::class);
-        $httpClient
-            ->expects($this->once())
-            ->method('sendRequest')
-            ->with($this->callback(function(RequestInterface $request): bool {
-                $this->assertSame('POST', $request->getMethod());
-                $this->assertSame('https://fcm.googleapis.com/fcm/send', (string)$request->getUri());
-                $this->assertSame('key=mock api key', $request->getHeaderLine('Authorization'));
-                $this->assertSame('application/json', $request->getHeaderLine('Content-Type'));
-                $this->assertSame(
-                    '{"collapse_key":"mock collapse key","mock condition param":"mock condition value"}',
-                    (string)$request->getBody(),
-                );
-
-                return true;
-            }))
-            ->willReturn($response);
-
-        $requestFactory = $this->createMock(HttpRequestFactoryInterface::class);
-        $requestFactory
-            ->expects($this->atLeastOnce())
-            ->method('createRequest')
-            ->willReturnCallback(fn(...$args) => new Request(...$args));
-        $streamFactory = $this->createMock(StreamFactoryInterface::class);
-        $streamFactory
-            ->expects($this->atLeastOnce())
-            ->method('createStream')
-            ->willReturnCallback(fn(...$args) => Stream::create(...$args));
+        $this->httpClient->addResponse($response);
 
         $message = new Message();
         $message->setCollapseKey('mock collapse key');
@@ -66,67 +45,53 @@ final class ClientTest extends TestCase {
         $recipient->method('getConditionParam')->willReturn('mock condition param');
         $recipient->method('getConditionValue')->willReturn('mock condition value');
 
-        $client = new Client('mock api key', $httpClient, $requestFactory, $streamFactory);
-        $result = $client->send($message, $recipient);
+        $this->assertSame('projects/mock-project/messages/0:1722275862463685%d2fce111d2fce111', $this->client->send($message, $recipient));
 
-        $this->assertSame(1234567890123456789, $result->multicastId);
-        $this->assertSame(2, $result->countSuccess);
-        $this->assertSame(1, $result->countFailures);
+        $sentRequests = $this->httpClient->getRequests();
+        $this->assertCount(1, $sentRequests);
+        [$sentRequest] = $sentRequests;
+        $this->assertSame('POST', $sentRequest->getMethod());
+        $this->assertSame('https://fcm.googleapis.com/v1/projects/mock-project/messages:send', (string)$sentRequest->getUri());
+        $this->assertSame('Bearer mock api token', $sentRequest->getHeaderLine('Authorization'));
+        $this->assertSame('application/json', $sentRequest->getHeaderLine('Content-Type'));
         $this->assertSame(
-            [
-                ['message_id' => 'mock_message_1'],
-                ['message_id' => 'mock_message_2'],
-                ['error' => 'InvalidRegistration'],
-            ],
-            $result->results,
+            '{"message":{"collapse_key":"mock collapse key","mock condition param":"mock condition value"}}',
+            (string)$sentRequest->getBody(),
         );
+    }
+
+    public function testValidationException(): void {
+        $response = $this->createMock(ResponseInterface::class);
+        $response->method('getStatusCode')->willReturn(400);
+        $response->method('getBody')->willReturn(Stream::create('{"error":{"code":400,"message":"Some error","status":"INVALID_ARGUMENT","details":[{"@type":"type.googleapis.com/google.firebase.fcm.v1.FcmError","errorCode":"INVALID_ARGUMENT"}]}}'));
+
+        $this->httpClient->addResponse($response);
+
+        try {
+            $this->client->send(new Message(), new Device(''));
+            $this->fail(ErrorResponseException::class . ' was not thrown');
+        } catch (ErrorResponseException $e) {
+            $this->assertSame('Some error', $e->getMessage());
+            $this->assertSame(400, $e->getCode());
+            $this->assertSame('INVALID_ARGUMENT', $e->errorCode);
+            $this->assertSame($response, $e->response);
+        }
     }
 
     public function testUnexpectedResponse(): void {
         $response = $this->createMock(ResponseInterface::class);
-        $response->method('getStatusCode')->willReturn(401);
+        $response->method('getStatusCode')->willReturn(500);
 
-        $httpClient = $this->createMock(HttpClientInterface::class);
-        $httpClient->method('sendRequest')->willReturn($response);
+        $this->httpClient->addResponse($response);
 
-        $recipient = $this->createMock(Recipient::class);
-        $recipient->method('getConditionParam')->willReturn('mock condition param');
-        $recipient->method('getConditionValue')->willReturn('mock condition value');
-
-        $client = new Client('mock api key', $httpClient);
         try {
-            $client->send(new Message(), $recipient);
+            $this->client->send(new Message(), new Device(''));
             $this->fail(UnexpectedResponseException::class . ' was not thrown');
         } catch (UnexpectedResponseException $e) {
-            $this->assertSame('Received an unexpected response from FCM', $e->getMessage());
-            $this->assertSame($response, $e->getResponse());
+            $this->assertSame('Received unexpected FCM response with 500 status code', $e->getMessage());
+            $this->assertSame(500, $e->getCode());
+            $this->assertSame($response, $e->response);
         }
-    }
-
-    public function testHttpClientException(): void {
-        $exception = $this->createMock(ClientExceptionInterface::class);
-
-        $httpClient = $this->createMock(HttpClientInterface::class);
-        $httpClient->method('sendRequest')->willThrowException($exception);
-
-        $recipient = $this->createMock(Recipient::class);
-        $recipient->method('getConditionParam')->willReturn('mock condition param');
-        $recipient->method('getConditionValue')->willReturn('mock condition value');
-
-        $client = new Client('mock api key', $httpClient);
-        try {
-            $client->send(new Message(), $recipient);
-            $this->fail(ClientExceptionInterface::class . ' was not thrown');
-        } catch (Throwable $thrownException) {
-            $this->assertSame($exception, $thrownException);
-        }
-    }
-
-    public function testAutoDiscoveryOfHttpDependencies(): void {
-        HttpClientDiscovery::prependStrategy(MockClientStrategy::class);
-
-        $this->expectNotToPerformAssertions();
-        new Client('mock api token');
     }
 
 }

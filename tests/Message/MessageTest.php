@@ -12,10 +12,6 @@ use PHPUnit\Framework\TestCase;
  */
 final class MessageTest extends TestCase {
 
-    protected function setUp(): void {
-        parent::setUp();
-    }
-
     public function test(): void {
         $notification = new Notification();
         $model = new Message();
@@ -39,9 +35,7 @@ final class MessageTest extends TestCase {
                 'mutable_content' => true,
                 'content_available' => true,
                 'image' => 'https://example.com/image.png',
-                'data' => [
-                    'key' => 'value',
-                ],
+                'data' => '{"key":"value"}',
             ],
             $model->getPayload(),
         );

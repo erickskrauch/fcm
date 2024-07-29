@@ -34,7 +34,7 @@ use ErickSkrauch\Fcm\Message\Message;
 use ErickSkrauch\Fcm\Message\Notification;
 use ErickSkrauch\Fcm\Recipient\Device;
 
-$client = new Client('YOUR SERVER KEY');
+$client = new Client('SERVICE ACCOUNT OAUTH TOKEN', 'project-x146w');
 
 $notification = new Notification(, 'testing body');
 $notification->setTitle('Wow, something happened...');
@@ -44,33 +44,9 @@ $message = new Message();
 $message->setNotification($notification);
 $message->setCollapseKey('collapse.key');
 
-$recipient = new Device('your-device-token');
+$recipient = new Device('your-device-token'); // or new ErickSkrauch\Fcm\Recipient\Topic('topic');
 
 $result = $client->send($message, $recipient);
-```
-
-The library provides several implementations for the `Recipient` interface:
-* `Device` is used to send notifications to a single device.
-* `Topic` is used to send notifications to a single topic. 
-* `MultipleDevices` is used to send notifications to multiple devices. The FCM documentation doesn't recommend using this method to send to 1 device.
-* `MultipleTopics` is used to send notifications to multiple topics combined by the operator `||`.
-
-At the moment, the library does not have a builder for complex conditions. But you can always create your own implementation of the `Recipient` interface:
-
-```php
-use ErickSkrauch\Fcm\Recipient\Recipient;
-
-class MyComplexCondition implements Recipient {
-
-    public function getConditionParam(): string{
-        return Recipient::PARAM_CONDITION;
-    }
-    
-    public function getConditionValue(): string {
-        return "'TopicA' in topics && ('TopicB' in topics || 'TopicC' in topics)";
-    }
-
-}
 ```
 
 ## Contribute

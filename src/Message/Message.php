@@ -18,7 +18,7 @@ final class Message {
      *     mutable_content?: true,
      *     content_available?: true,
      *     image?: string,
-     *     data?: array<string, string|int>,
+     *     data?: string,
      * }
      */
     private array $data = [];
@@ -87,10 +87,12 @@ final class Message {
 
     /**
      * @see https://firebase.google.com/docs/cloud-messaging/http-server-ref#data
-     * @param array<string, string|int> $data
+     * @param array<mixed> $data
      */
     public function setData(array $data): self {
-        $this->data['data'] = $data;
+        // https://firebase.google.com/docs/cloud-messaging/migrate-v1#example-nested-json-data
+        $this->data['data'] = json_encode($data, JSON_THROW_ON_ERROR);
+
         return $this;
     }
 
@@ -104,7 +106,7 @@ final class Message {
      *     mutable_content?: true,
      *     content_available?: true,
      *     image?: string,
-     *     data?: array<string, string|int>,
+     *     data?: string,
      * }
      */
     public function getPayload(): array {
